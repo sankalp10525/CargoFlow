@@ -2,7 +2,7 @@
 set -e
 
 echo "⏳ Waiting for PostgreSQL..."
-until python -c "import psycopg2; psycopg2.connect('$DATABASE_URL')" 2>/dev/null; do
+until pg_isready -h "${POSTGRES_HOST:-db}" -U "${POSTGRES_USER:-cargoflow}" -d "${POSTGRES_DB:-cargoflow}" -q; do
   sleep 1
 done
 echo "✅ PostgreSQL is up."
