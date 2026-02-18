@@ -10,6 +10,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cargoflow}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cargoflow}"]
       interval: 5s
@@ -29,8 +31,8 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: ../infra/docker/backend/Dockerfile
+      context: .
+      dockerfile: infra/docker/backend/Dockerfile
     restart: unless-stopped
     env_file: .env
     environment:
@@ -49,12 +51,12 @@ services:
       - media_data:/app/media
       - static_data:/app/staticfiles
     ports:
-      - "8000:8000"
+      - "8001:8000"
 
   celery_worker:
     build:
-      context: ./backend
-      dockerfile: ../infra/docker/backend/Dockerfile
+      context: .
+      dockerfile: infra/docker/backend/Dockerfile
     restart: unless-stopped
     command: celery -A config.celery worker --loglevel=info --concurrency=2
     env_file: .env
@@ -74,8 +76,8 @@ services:
 
   celery_beat:
     build:
-      context: ./backend
-      dockerfile: ../infra/docker/backend/Dockerfile
+      context: .
+      dockerfile: infra/docker/backend/Dockerfile
     restart: unless-stopped
     command: >
       celery -A config.celery beat --loglevel=info
@@ -95,11 +97,11 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: ../infra/docker/frontend/Dockerfile
+      context: .
+      dockerfile: infra/docker/frontend/Dockerfile
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - backend
 

@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { ordersApi } from "@/api/endpoints";
 import type { Order } from "@/types";
@@ -10,7 +10,6 @@ import { useState } from "react";
 
 export default function OpsOrdersPage() {
   const [search, setSearch] = useState("");
-  const qc = useQueryClient();
 
   const { data: orders, isLoading, isError } = useQuery<Order[]>({
     queryKey: ["orders"],

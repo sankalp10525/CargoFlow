@@ -2,10 +2,10 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
-RUN npm ci
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm install
 
-COPY . .
+COPY frontend/ .
 RUN npm run build
 
 # ── Production stage ──────────────────────────────────────────────────────────

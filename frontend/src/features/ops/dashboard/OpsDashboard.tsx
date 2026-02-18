@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ordersApi, exceptionsApi, routesApi } from "@/api/endpoints";
-import { Package, Map, AlertTriangle, CheckCircle2, TruckIcon } from "lucide-react";
+import { Map, AlertTriangle, CheckCircle2, TruckIcon } from "lucide-react";
 import Spinner from "@/components/Spinner";
 import ErrorMessage from "@/components/ErrorMessage";
 import type { Order, Route, LogisticsException } from "@/types";

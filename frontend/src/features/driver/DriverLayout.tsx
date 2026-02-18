@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/features/auth/AuthContext";
-import { Home, MapPin, LogOut, PackageOpen } from "lucide-react";
+import { Home, LogOut, PackageOpen } from "lucide-react";
 import { clsx } from "clsx";
 
 const NAV = [

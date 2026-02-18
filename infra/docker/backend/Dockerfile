@@ -13,11 +13,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Python deps
-COPY requirements/base.txt requirements/base.txt
-COPY requirements/prod.txt requirements/prod.txt
+COPY backend/requirements/base.txt requirements/base.txt
+COPY backend/requirements/prod.txt requirements/prod.txt
 RUN pip install --upgrade pip && pip install -r requirements/prod.txt
 
-COPY . .
+COPY backend/ .
 
 COPY infra/docker/backend/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
