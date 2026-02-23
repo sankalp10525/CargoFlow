@@ -1,5 +1,6 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/features/auth/AuthContext";
+import ThemeToggle from "@/components/ThemeToggle";
 import {
   LayoutDashboard,
   Package,
@@ -7,7 +8,7 @@ import {
   Users,
   AlertTriangle,
   LogOut,
-  PackageOpen,
+  Truck,
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -29,15 +30,20 @@ export default function OpsLayout() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
-      <aside className="flex w-56 flex-col bg-gray-900 text-gray-100">
-        <div className="flex items-center gap-2 px-4 py-5 text-lg font-bold text-white">
-          <PackageOpen size={22} />
-          CargoFlow
+      <aside className="flex w-60 flex-col bg-gradient-to-b from-gray-900 to-gray-800 dark:from-gray-950 dark:to-gray-900 text-gray-100 shadow-xl">
+        <div className="flex items-center gap-3 px-5 py-6 border-b border-white/10">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 shadow-lg">
+            <Truck size={18} className="text-white" />
+          </div>
+          <div>
+            <p className="text-base font-bold text-white leading-tight">CargoFlow</p>
+            <p className="text-xs text-gray-400">Operations</p>
+          </div>
         </div>
 
-        <nav className="flex-1 space-y-1 px-2 py-4">
+        <nav className="flex-1 space-y-1 px-3 py-4">
           {NAV.map(({ to, icon: Icon, label, end }) => (
             <NavLink
               key={to}
@@ -45,10 +51,10 @@ export default function OpsLayout() {
               end={end}
               className={({ isActive }) =>
                 clsx(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
                   isActive
-                    ? "bg-brand-600 text-white"
-                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                    ? "bg-brand-600 text-white shadow-md shadow-brand-900/20"
+                    : "text-gray-400 hover:bg-white/10 hover:text-white"
                 )
               }
             >
@@ -58,13 +64,28 @@ export default function OpsLayout() {
           ))}
         </nav>
 
-        <div className="border-t border-gray-800 px-4 py-3">
-          <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+        <div className="border-t border-white/10 px-4 py-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-600/20 text-xs font-bold text-brand-300">
+              {user?.full_name?.[0]?.toUpperCase() ?? "U"}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium text-gray-200 truncate">{user?.full_name}</p>
+              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+            </div>
+          </div>
+          
+          {/* Theme Toggle */}
+          <div className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2 hover:bg-white/10 transition-colors">
+            <span className="text-xs font-medium text-gray-300">🌓 Theme</span>
+            <ThemeToggle />
+          </div>
+          
           <button
             onClick={handleLogout}
-            className="mt-2 flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors"
+            className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
           >
-            <LogOut size={14} />
+            <LogOut size={13} />
             Sign out
           </button>
         </div>

@@ -125,17 +125,31 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     stops = StopSerializer(many=True, read_only=True)
     status_history = StatusHistorySerializer(many=True, read_only=True)
     pod = PODSerializer(read_only=True)
+    route_id = serializers.UUIDField(source="assigned_route_id", read_only=True, allow_null=True)
+    driver_name = serializers.SerializerMethodField()
+    route_date = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = [
             "id", "reference_code", "customer_name", "customer_phone",
             "customer_email", "status", "tracking_token",
-            "assigned_route", "stops", "status_history", "pod",
+            "assigned_route", "route_id", "driver_name", "route_date",
+            "stops", "status_history", "pod",
             "pickup_window_start", "pickup_window_end",
             "drop_window_start", "drop_window_end",
             "notes", "created_at", "updated_at",
         ]
+
+    def get_driver_name(self, obj):
+        if obj.assigned_route and obj.assigned_route.driver:
+            return obj.assigned_route.driver.name
+        return None
+
+    def get_route_date(self, obj):
+        if obj.assigned_route:
+            return str(obj.assigned_route.route_date)
+        return None
 
 
 class OrderCreateSerializer(serializers.Serializer):
@@ -160,13 +174,14 @@ class OrderCancelSerializer(serializers.Serializer):
 class RouteListSerializer(serializers.ModelSerializer):
     driver = DriverSerializer(read_only=True)
     vehicle = VehicleSerializer(read_only=True)
+    orders = OrderListSerializer(many=True, read_only=True)
     order_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Route
         fields = [
             "id", "route_date", "driver", "vehicle", "status",
-            "order_count", "start_time", "end_time", "created_at",
+            "orders", "order_count", "start_time", "end_time", "created_at",
         ]
 
     def get_order_count(self, obj):
@@ -207,15 +222,19 @@ class OrderReassignSerializer(serializers.Serializer):
 
 class ExceptionSerializer(serializers.ModelSerializer):
     order_reference = serializers.CharField(source="order.reference_code", read_only=True)
-    created_by_name = serializers.CharField(source="created_by.full_name", read_only=True)
+    created_by_name = serializers.SerializerMethodField()
+    description = serializers.CharField(source="notes", read_only=True)
 
     class Meta:
         model = LogisticsException
         fields = [
             "id", "order", "order_reference", "type", "status",
-            "notes", "resolution", "created_by_name",
+            "notes", "description", "resolution", "created_by_name",
             "created_at", "acknowledged_at", "resolved_at",
         ]
+
+    def get_created_by_name(self, obj):
+        return obj.created_by.full_name if obj.created_by else None
 
 
 class ExceptionAckSerializer(serializers.Serializer):
@@ -250,7 +269,7 @@ class ScanSerializer(serializers.Serializer):
 class TrackingStopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stop
-        fields = ["sequence_index", "type", "address_line", "city",
+        fields = ["id", "sequence_index", "type", "address_line", "city",
                   "scheduled_eta", "actual_arrival_time", "status"]
 
 
@@ -263,7 +282,7 @@ class TrackingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            "reference_code", "customer_name", "status",
+            "id", "reference_code", "customer_name", "status",
             "stops", "pod_summary", "last_update", "driver_eta",
         ]
 

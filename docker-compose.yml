@@ -34,10 +34,16 @@ services:
       context: .
       dockerfile: infra/docker/backend/Dockerfile
     restart: unless-stopped
-    env_file: .env
+    env_file:
+      - path: .env
+        required: false
     environment:
-      DJANGO_ENV: prod
-      # Override localhost values from .env with Docker service names
+      DJANGO_ENV: dev
+      DEBUG: "True"
+      SECRET_KEY: dev-secret-key-change-in-production
+      POSTGRES_DB: cargoflow
+      POSTGRES_USER: cargoflow
+      POSTGRES_PASSWORD: cargoflow
       POSTGRES_HOST: db
       REDIS_URL: redis://redis:6379/0
       CELERY_BROKER_URL: redis://redis:6379/1
@@ -59,9 +65,16 @@ services:
       dockerfile: infra/docker/backend/Dockerfile
     restart: unless-stopped
     command: celery -A config.celery worker --loglevel=info --concurrency=2
-    env_file: .env
+    env_file:
+      - path: .env
+        required: false
     environment:
-      DJANGO_ENV: prod
+      DJANGO_ENV: dev
+      DEBUG: "True"
+      SECRET_KEY: dev-secret-key-change-in-production
+      POSTGRES_DB: cargoflow
+      POSTGRES_USER: cargoflow
+      POSTGRES_PASSWORD: cargoflow
       POSTGRES_HOST: db
       REDIS_URL: redis://redis:6379/0
       CELERY_BROKER_URL: redis://redis:6379/1
@@ -82,9 +95,16 @@ services:
     command: >
       celery -A config.celery beat --loglevel=info
       --scheduler django_celery_beat.schedulers:DatabaseScheduler
-    env_file: .env
+    env_file:
+      - path: .env
+        required: false
     environment:
-      DJANGO_ENV: prod
+      DJANGO_ENV: dev
+      DEBUG: "True"
+      SECRET_KEY: dev-secret-key-change-in-production
+      POSTGRES_DB: cargoflow
+      POSTGRES_USER: cargoflow
+      POSTGRES_PASSWORD: cargoflow
       POSTGRES_HOST: db
       REDIS_URL: redis://redis:6379/0
       CELERY_BROKER_URL: redis://redis:6379/1

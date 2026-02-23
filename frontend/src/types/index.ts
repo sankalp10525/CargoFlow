@@ -7,7 +7,11 @@ export interface User {
   email: string;
   full_name: string;
   role: Role;
-  tenant: string;
+  tenant: {
+    id: string;
+    name: string;
+    slug: string;
+  };
 }
 
 export type OrderStatus =
@@ -26,23 +30,23 @@ export interface Stop {
   id: string;
   type: StopType;
   sequence_index: number;
-  address_line1: string;
-  address_line2?: string;
+  address_line: string;
   city: string;
   state?: string;
-  pincode: string;
+  postal_code?: string;
   lat?: number;
   lng?: number;
   status: StopStatus;
   scheduled_eta?: string;
   actual_arrival_time?: string;
+  notes?: string;
 }
 
 export interface POD {
   id: string;
   receiver_name: string;
-  photo?: string;
-  signature?: string;
+  photo_url?: string;
+  signature_url?: string;
   delivered_at: string;
   notes?: string;
 }
@@ -52,8 +56,10 @@ export interface StatusHistory {
   from_status: OrderStatus | null;
   to_status: OrderStatus;
   actor_type: "OPS" | "DRIVER" | "SYSTEM";
-  actor_name: string | null;
-  notes: string;
+  actor_user?: { id: string; full_name: string; email: string } | null;
+  stop?: string | null;
+  metadata?: Record<string, unknown>;
+  notes?: string;
   created_at: string;
 }
 
@@ -76,6 +82,9 @@ export interface Order {
   pod?: POD;
   status_history?: StatusHistory[];
   assigned_route?: string | null;
+  route_id?: string | null;
+  driver_name?: string | null;
+  route_date?: string | null;
 }
 
 export interface Driver {
@@ -86,6 +95,7 @@ export interface Driver {
   current_lng?: number;
   location_updated_at?: string;
   is_active: boolean;
+  created_at?: string;
 }
 
 export interface Vehicle {
@@ -94,6 +104,7 @@ export interface Vehicle {
   type: "BIKE" | "VAN" | "TRUCK" | "TEMPO";
   capacity_kg: number;
   is_active: boolean;
+  created_at?: string;
 }
 
 export type RouteStatus = "PLANNED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
@@ -105,8 +116,11 @@ export interface Route {
   vehicle: Vehicle;
   status: RouteStatus;
   orders: Order[];
+  order_count?: number;
   start_time?: string;
   end_time?: string;
+  notes?: string;
+  created_at: string;
 }
 
 export type ExceptionType =
@@ -125,17 +139,36 @@ export interface LogisticsException {
   order_reference: string;
   type: ExceptionType;
   status: ExceptionStatus;
-  description: string;
   notes: string;
-  resolution: string;
+  description: string;
+  resolution?: string;
+  created_by_name?: string;
   created_at: string;
+  acknowledged_at?: string;
+  resolved_at?: string;
+}
+
+export interface TrackingStop {
+  id: string;
+  type: StopType;
+  sequence_index: number;
+  address_line: string;
+  city: string;
+  scheduled_eta?: string;
+  actual_arrival_time?: string;
+  status: StopStatus;
 }
 
 export interface TrackingData {
+  id: string;
   reference_code: string;
   customer_name: string;
   status: OrderStatus;
-  stops: Pick<Stop, "id" | "type" | "address_line1" | "city" | "status" | "scheduled_eta">[];
-  pod_summary?: { receiver_name: string; delivered_at: string };
-  last_update: string | null;
+  stops: TrackingStop[];
+  pod_summary?: {
+    receiver_name: string;
+    delivered_at: string;
+  } | null;
+  last_update: string;
+  driver_eta?: string | null;
 }

@@ -33,7 +33,7 @@ class VehicleAdmin(admin.ModelAdmin):
 class StopInline(admin.TabularInline):
     model = Stop
     extra = 0
-    fields = ("sequence_index", "type", "address_line1", "city", "status", "scheduled_eta", "actual_arrival_time")
+    fields = ("sequence_index", "type", "address_line", "city", "status", "scheduled_eta", "actual_arrival_time")
     readonly_fields = ("actual_arrival_time",)
 
 
